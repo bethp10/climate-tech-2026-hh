@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SF Climate Week 2026 · Check-in</title>
+
+  <!-- =====================================================
+       CONFIGURATION — replace this URL after you deploy
+       your Google Apps Script as a Web App
+  ====================================================== -->
+  <script>
+    const APPS_SCRIPT_URL = "YOUR_APPS_SCRIPT_URL_HERE";
+  </script>
+  <!-- ================================================== -->
+
+  <style>
+    /* ── Fonts ── */
+    @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400;1,700&family=Inter:wght@300;400;500&display=swap');
+
+    /* ── Reset ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    /* ── Palette (matching the poster) ── */
+    :root {
+      --cream:      #F2EDE4;
+      --cream-dark: #E8E1D5;
+      --ink:        #1A1814;
+      --ink-soft:   #3D3A34;
+      --ink-light:  #7A7469;
+      --accent:     #2C2C2C;
+      --green:      #2D5016;
+      --red:        #8B2000;
+      --border:     #C8C0B4;
+    }
+
+    html, body {
+      height: 100%;
+      background: var(--cream);
+      color: var(--ink);
+      font-family: 'Inter', sans-serif;
+    }
+
+    /* ── Layout ── */
+    .page {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 2rem 1.5rem;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 540px;
+    }
+
+    /* ── Header ── */
+    .eyebrow {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 1.2rem;
+    }
+
+    .rule {
+      border: none;
+      border-top: 1px solid var(--border);
+      margin-bottom: 1.8rem;
+    }
+
+    h1 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: clamp(2.4rem, 6vw, 3.6rem);
+      font-weight: 700;
+      line-height: 1.05;
+      color: var(--ink);
+      margin-bottom: 0.3rem;
+    }
+
+    h1 em {
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .subtitle {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1rem;
+      font-style: italic;
+      color: var(--ink-soft);
+      margin-bottom: 2.8rem;
+      line-height: 1.5;
+    }
+
+    /* ── Form ── */
+    .form-group {
+      margin-bottom: 1.2rem;
+    }
+
+    label {
+      display: block;
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.45rem;
+    }
+
+    input[type="text"],
+    input[type="email"] {
+      width: 100%;
+      padding: 0.85rem 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 1rem;
+      color: var(--ink);
+      background: transparent;
+      border: 1px solid var(--border);
+      border-radius: 0;
+      outline: none;
+      transition: border-color 0.2s;
+      -webkit-appearance: none;
+    }
+
+    input[type="text"]:focus,
+    input[type="email"]:focus {
+      border-color: var(--ink);
+    }
+
+    input::placeholder { color: var(--ink-light); }
+
+    .btn {
+      display: block;
+      width: 100%;
+      margin-top: 1.8rem;
+      padding: 1rem;
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--cream);
+      background: var(--ink);
+      border: none;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+
+    .btn:hover  { background: var(--ink-soft); }
+    .btn:active { background: var(--accent); }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+
+    /* ── Feedback screens ── */
+    .feedback {
+      display: none;
+      text-align: center;
+      padding: 2.5rem 0 1.5rem;
+    }
+
+    .feedback.visible { display: block; }
+
+    .feedback-icon {
+      font-size: 3rem;
+      margin-bottom: 1.2rem;
+    }
+
+    .feedback h2 {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 0.5rem;
+    }
+
+    .feedback h2 em {
+      font-style: italic;
+      font-weight: 400;
+    }
+
+    .feedback p {
+      font-size: 0.95rem;
+      color: var(--ink-soft);
+      line-height: 1.6;
+      margin-bottom: 0.4rem;
+    }
+
+    .feedback .reset-note {
+      font-size: 0.78rem;
+      color: var(--ink-light);
+      margin-top: 2rem;
+    }
+
+    .feedback-success h2 { color: var(--green); }
+    .feedback-already  h2 { color: var(--ink-soft); }
+    .feedback-notfound h2 { color: var(--red); }
+
+    /* ── Footer ── */
+    footer {
+      margin-top: 3.5rem;
+      border-top: 1px solid var(--border);
+      padding-top: 1.4rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .footer-label {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+    }
+
+    .footer-logos {
+      display: flex;
+      align-items: center;
+      gap: 1.2rem;
+    }
+
+    .logo-mercury {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.85rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--ink);
+    }
+
+    .logo-sep {
+      width: 1px;
+      height: 1.2rem;
+      background: var(--border);
+    }
+
+    .logo-leap {
+      font-family: 'Inter', sans-serif;
+      font-size: 0.68rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--ink);
+      line-height: 1.2;
+      text-align: center;
+    }
+
+    /* ── Spinner ── */
+    .spinner {
+      display: inline-block;
+      width: 18px;
+      height: 18px;
+      border: 2px solid rgba(255,255,255,0.3);
+      border-top-color: #fff;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 0.5rem;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    /* ── Meta info block ── */
+    .meta {
+      display: flex;
+      gap: 2.5rem;
+      margin-bottom: 2.8rem;
+    }
+
+    .meta-block {}
+    .meta-label {
+      font-size: 0.65rem;
+      font-weight: 500;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--ink-light);
+      margin-bottom: 0.3rem;
+    }
+    .meta-value {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.25;
+    }
+    .meta-sub {
+      font-size: 0.8rem;
+      color: var(--ink-soft);
+      margin-top: 0.15rem;
+    }
+  </style>
+</head>
+<body>
+<div class="page">
+  <div class="card">
+
+    <!-- Header -->
+    <p class="eyebrow">SF Climate Week · Apr 2026</p>
+    <hr class="rule" />
+    <h1>SF Climate Week 2026<br><em>Happy Hour</em></h1>
+    <p class="subtitle"><em>Connecting</em> founders, operators, and investors who are <em>building</em> a climate-focused future</p>
+
+    <!-- Event meta -->
+    <div class="meta">
+      <div class="meta-block">
+        <div class="meta-label">When</div>
+        <div class="meta-value">Wednesday<br>April 22, 2026</div>
+        <div class="meta-sub">6:00 – 9:00 PM PT</div>
+      </div>
+      <div class="meta-block">
+        <div class="meta-label">Where</div>
+        <div class="meta-value">ANINA<br>Hayes Valley</div>
+        <div class="meta-sub">482 Hayes St, SF CA 94102</div>
+      </div>
+    </div>
+
+    <!-- Check-in form -->
+    <div id="formSection">
+      <form id="checkinForm" onsubmit="handleCheckin(event)">
+        <div class="form-group">
+          <label for="nameInput">Full Name</label>
+          <input type="text" id="nameInput" placeholder="Jane Smith" required autocomplete="name" />
+        </div>
+        <div class="form-group">
+          <label for="emailInput">Email Address</label>
+          <input type="email" id="emailInput" placeholder="jane@example.com" required autocomplete="email" />
+        </div>
+        <button class="btn" id="submitBtn" type="submit">Check In</button>
+      </form>
+    </div>
+
+    <!-- Success -->
+    <div class="feedback feedback-success" id="feedbackSuccess">
+      <div class="feedback-icon">🌿</div>
+      <h2>Welcome, <em id="successName">—</em>!</h2>
+      <p>You're checked in. Enjoy the evening.</p>
+      <p id="successCompany" style="font-style:italic; font-size:0.9rem;"></p>
+      <p class="reset-note">This screen will reset in <span id="countdown">5</span>s…</p>
+    </div>
+
+    <!-- Already checked in -->
+    <div class="feedback feedback-already" id="feedbackAlready">
+      <div class="feedback-icon">✓</div>
+      <h2><em id="alreadyName">—</em>, you're all set</h2>
+      <p>You were already checked in. Welcome!</p>
+      <p class="reset-note">Resetting in <span id="countdown2">5</span>s…</p>
+    </div>
+
+    <!-- Walk-in (not pre-registered) -->
+    <div class="feedback feedback-success" id="feedbackNotFound">
+      <div class="feedback-icon">🌿</div>
+      <h2>Welcome, <em id="walkinName">—</em>!</h2>
+      <p>You weren't on the pre-reg list, but we've got you now.</p>
+      <p>Enjoy the evening!</p>
+      <p class="reset-note">Resetting in <span id="countdown3">5</span>s…</p>
+    </div>
+
+    <!-- Footer -->
+    <footer>
+      <span class="footer-label">Hosted by</span>
+      <div class="footer-logos">
+        <span class="logo-mercury">Mercury</span>
+        <div class="logo-sep"></div>
+        <span class="logo-leap">Leap<br>Forward<br>Ventures</span>
+      </div>
+    </footer>
+
+  </div><!-- /card -->
+</div><!-- /page -->
+
+<script>
+  async function handleCheckin(e) {
+    e.preventDefault();
+
+    const btn   = document.getElementById("submitBtn");
+    const name  = document.getElementById("nameInput").value.trim();
+    const email = document.getElementById("emailInput").value.trim();
+
+    // Show loading state
+    btn.disabled = true;
+    btn.innerHTML = '<span class="spinner"></span>Checking in…';
+
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method:  "POST",
+        headers: { "Content-Type": "text/plain" }, // Apps Script requires text/plain for doPost
+        body:    JSON.stringify({ name, email })
+      });
+
+      const data = await res.json();
+
+      document.getElementById("formSection").style.display = "none";
+
+      if (data.success) {
+        document.getElementById("successName").textContent = data.name || name;
+        const co = document.getElementById("successCompany");
+        co.textContent = data.company ? data.company : "";
+        showFeedback("feedbackSuccess", "countdown", 5);
+
+      } else if (data.alreadyCheckedIn) {
+        document.getElementById("alreadyName").textContent = data.name || name;
+        showFeedback("feedbackAlready", "countdown2", 5);
+
+      } else {
+        // Walk-in — still welcomed, just wasn't pre-registered
+        document.getElementById("walkinName").textContent = data.name || name;
+        showFeedback("feedbackNotFound", "countdown3", 5);
+      }
+
+    } catch (err) {
+      alert("Network error — please check your connection and try again.");
+      btn.disabled = false;
+      btn.innerHTML = "Check In";
+    }
+  }
+
+  function showFeedback(id, countdownId, seconds) {
+    document.getElementById(id).classList.add("visible");
+    let remaining = seconds;
+    const el = document.getElementById(countdownId);
+    const interval = setInterval(() => {
+      remaining--;
+      if (el) el.textContent = remaining;
+      if (remaining <= 0) {
+        clearInterval(interval);
+        resetForm();
+      }
+    }, 1000);
+  }
+
+  function resetForm() {
+    document.getElementById("formSection").style.display = "";
+    document.querySelectorAll(".feedback").forEach(f => f.classList.remove("visible"));
+    document.getElementById("nameInput").value  = "";
+    document.getElementById("emailInput").value = "";
+    const btn = document.getElementById("submitBtn");
+    btn.disabled = false;
+    btn.innerHTML = "Check In";
+    document.getElementById("nameInput").focus();
+  }
+</script>
+</body>
+</html>
